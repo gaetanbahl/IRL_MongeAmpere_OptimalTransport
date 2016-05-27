@@ -1,0 +1,12 @@
+\beamer@endinputifotherversion {3.36pt}
+\select@language {french}
+\beamer@sectionintoc {1}{Introduction}{2}{0}{1}
+\beamer@sectionintoc {2}{Solutions de viscosit\IeC {\'e}}{4}{0}{2}
+\beamer@subsectionintoc {2}{1}{Rappels}{5}{0}{2}
+\beamer@subsectionintoc {2}{2}{D\IeC {\'e}finition}{8}{0}{2}
+\beamer@subsectionintoc {2}{3}{Exemple}{11}{0}{2}
+\beamer@sectionintoc {3}{\IeC {\'E}quation de Monge-Amp\IeC {\`e}re et transport optimal}{13}{0}{3}
+\beamer@subsectionintoc {3}{1}{Pr\IeC {\'e}sentation du probl\IeC {\`e}me}{14}{0}{3}
+\beamer@subsectionintoc {3}{2}{Impl\IeC {\'e}mentation Scilab}{19}{0}{3}
+\beamer@subsectionintoc {3}{3}{Impl\IeC {\'e}mentation OpenCL}{24}{0}{3}
+\beamer@sectionintoc {4}{Conclusion}{29}{0}{4}

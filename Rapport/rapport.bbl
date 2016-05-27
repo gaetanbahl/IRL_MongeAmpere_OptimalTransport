@@ -1,0 +1,43 @@
+\begin{thebibliography}{1}
+
+\bibitem{crandall1983viscosity}
+M.~G. Crandall and P.-L. Lions, ``Viscosity solutions of hamilton-jacobi
+  equations,'' {\em Transactions of the American Mathematical Society},
+  vol.~277, no.~1, pp.~1--42, 1983.
+
+\bibitem{dragoniintroduction}
+F.~Dragoni, ``Introduction to viscosity solutions for nonlinear pdes.''
+
+\bibitem{bressan2010viscosity}
+A.~Bressan, ``Viscosity solutions of hamilton-jacobi equations and optimal
+  control problems,'' {\em Lecture notes}, 2010.
+
+\bibitem{crandall1992user}
+M.~G. Crandall, H.~Ishii, and P.-L. Lions, ``User’s guide to viscosity
+  solutions of second order partial differential equations,'' {\em Bulletin of
+  the American Mathematical Society}, vol.~27, no.~1, pp.~1--67, 1992.
+
+\bibitem{bardi2008optimal}
+M.~Bardi and I.~Capuzzo-Dolcetta, {\em Optimal control and viscosity solutions
+  of Hamilton-Jacobi-Bellman equations}.
+\newblock Springer Science \& Business Media, 2008.
+
+\bibitem{benamou2014numerical}
+J.-D. Benamou, B.~D. Froese, and A.~M. Oberman, ``Numerical solution of the
+  optimal transportation problem using the monge--ampere equation,'' {\em
+  Journal of Computational Physics}, vol.~260, pp.~107--126, 2014.
+
+\bibitem{villani2008optimal}
+C.~Villani, {\em Optimal transport: old and new}, vol.~338.
+\newblock Springer Science \& Business Media, 2008.
+
+\bibitem{stone2010opencl}
+J.~E. Stone, D.~Gohara, and G.~Shi, ``Opencl: A parallel programming standard
+  for heterogeneous computing systems,'' {\em Computing in science \&
+  engineering}, vol.~12, no.~1-3, pp.~66--73, 2010.
+
+\bibitem{khronos2009khronos}
+K.~GROUP {\em et~al.}, ``The khronos group,'' {\em Beaverton, 2011b.
+  Dispon{\'\i}vel em}, 2009.
+
+\end{thebibliography}

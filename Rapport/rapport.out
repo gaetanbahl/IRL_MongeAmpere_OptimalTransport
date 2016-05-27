@@ -1,0 +1,31 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{Solutions de Viscosit\351}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Rappels sur les \311quations aux D\351riv\351es Partielles}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Justification de la n\351cessit\351 des solutions de viscosit\351}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.3}{D\351finition d'une solution de viscosit\351}{section.2}% 5
+\BOOKMARK [2][-]{subsection.2.4}{Applications possibles des solutions de viscosit\351}{section.2}% 6
+\BOOKMARK [1][-]{section.3}{Solutions de viscosit\351 : Exemples }{}% 7
+\BOOKMARK [2][-]{subsection.3.1}{Exemple 1D : \311quation eikonale}{section.3}% 8
+\BOOKMARK [2][-]{subsection.3.2}{Exemple 2D : Monge-Amp\350re}{section.3}% 9
+\BOOKMARK [3][-]{subsubsection.3.2.1}{\311tude de la fonction u}{subsection.3.2}% 10
+\BOOKMARK [3][-]{subsubsection.3.2.2}{V\351rification de l'\351quation}{subsection.3.2}% 11
+\BOOKMARK [3][-]{subsubsection.3.2.3}{u est C1}{subsection.3.2}% 12
+\BOOKMARK [3][-]{subsubsection.3.2.4}{Calcul des sous-gradients de u en \(1,0\)}{subsection.3.2}% 13
+\BOOKMARK [1][-]{section.4}{R\351solution num\351rique de l'\351quation de Monge-Amp\350re}{}% 14
+\BOOKMARK [2][-]{subsection.4.1}{Pr\351sentation}{section.4}% 15
+\BOOKMARK [2][-]{subsection.4.2}{Exemple analytique}{section.4}% 16
+\BOOKMARK [2][-]{subsection.4.3}{M\351thode de r\351solution}{section.4}% 17
+\BOOKMARK [2][-]{subsection.4.4}{Impl\351mentation Scilab}{section.4}% 18
+\BOOKMARK [2][-]{subsection.4.5}{R\351sultats}{section.4}% 19
+\BOOKMARK [2][-]{subsection.4.6}{Impl\351mentation OpenCL}{section.4}% 20
+\BOOKMARK [3][-]{subsubsection.4.6.1}{Qu'est-ce qu'OpenCL ?}{subsection.4.6}% 21
+\BOOKMARK [3][-]{subsubsection.4.6.2}{Qu'est-ce qu'un GPU ?}{subsection.4.6}% 22
+\BOOKMARK [3][-]{subsubsection.4.6.3}{Travail r\351alis\351}{subsection.4.6}% 23
+\BOOKMARK [3][-]{subsubsection.4.6.4}{D\351tails d'impl\351mentation}{subsection.4.6}% 24
+\BOOKMARK [3][-]{subsubsection.4.6.5}{R\351sultats}{subsection.4.6}% 25
+\BOOKMARK [1][-]{section.5}{Conclusion}{}% 26
+\BOOKMARK [2][-]{subsection.5.1}{R\351sum\351}{section.5}% 27
+\BOOKMARK [2][-]{subsection.5.2}{Perspectives}{section.5}% 28
+\BOOKMARK [2][-]{subsection.5.3}{Bilan de l'IRL}{section.5}% 29
+\BOOKMARK [1][-]{section.6}{Annexe A : Code Scilab}{}% 30
+\BOOKMARK [1][-]{section.7}{Annexe B : Code OpenCL}{}% 31

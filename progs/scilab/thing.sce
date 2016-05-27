@@ -1,0 +1,540 @@
+//constantes
+
+
+//delta = 1 + (K * h)/sqrt(2)
+delta = 3; //en attendant
+epsilon = 0.1
+Niter = 100000;
+
+Npoints = 30;
+
+dt = 0.00003;
+
+Nvectsbord = 201;
+
+xmin=-1;
+xmax=1;
+ymin=-1;
+ymax=1;
+
+h = (xmax - xmin)/Npoints;
+
+x = linspace(xmin, xmax, Npoints);
+y = linspace(ymin, ymax, Npoints);
+
+v = [1/sqrt(2) 1/sqrt(2)];
+vorth = [1/sqrt(2) -1/sqrt(2)];
+////////
+
+//fonctions de densite
+function z = rhoY(x,y)
+//    z = 1
+//    z =  exp(- norm([x+0.3,y-0.3]) ^2 / 0.1) +0.1;
+    //z =  (Npoints^2)/66.051535  * exp(- norm([x,y]) ^2 / 0.1) +1;
+    
+    z =  0.1 + exp(- norm([x+0.3,y-0.3]) ^2 / 0.1);
+    
+//    if sqrt((x+0.2)^2 + (y-0.2)^2) < 0.3 then
+//        z = 2
+//    else
+//        z = 1
+//    end
+//    
+endfunction
+function z = rhoX(x,y)
+    //z = 9 * rhoY(x^3,y^3) * x^2 * y^2 +1
+    //z =  0.1 + exp(- norm([x,y]) ^2 / 0.1);
+//    z =  (Npoints^2)/66.051535  * exp(- norm([x,y]) ^2 / 0.1) +0.1;
+    z =  exp(- norm([x-0.3,y+0.3]) ^2 / 0.1) +0.1;
+//    
+//    if sqrt((x-0.2)^2 + (y+0.2)^2) < 0.3 then
+//        z = 2
+//    else
+//        z = 1
+//    end
+//    
+endfunction
+
+truc = 0
+for i = 1:Npoints
+    for j = 1:Npoints
+        truc(i,j) = rhoX(x(i),y(j))
+    end
+end
+clf();
+plot3d(x,y,truc)
+clf();
+//c = 0
+//for i = 1:Npoints
+//    for j = 1:Npoints
+//        c = c + rhoX(x(i),y(j))
+//    end
+//end
+
+//disp(c)
+
+set(gcf(),"color_map",[jetcolormap(64);hotcolormap(64)])
+//Sfgrayplot(x,y,rhoX,strf="041",colminmax=[1,64])
+
+///////
+
+//fonction pour le filtrage
+
+function sx = S(x)
+    sx = zeros(Npoints-2,Npoints-2)
+    for i = 1:(Npoints-2)
+        for j = 1:(Npoints-2)
+        
+    if x(i,j) <= 1 then
+        sx(i,j) = x(i,j)
+    elseif abs(x(i,j)) >= 2 then
+        sx(i,j) = 0
+    elseif x(i,j) > 1 then
+        sx(i,j) = 2 - x(i,j)
+    elseif x(i,j) < -1 then
+        sx(i,j) = - x(i,j) - 2
+    end
+end
+end
+    
+endfunction
+
+
+// fonction pour calculer la constante de Lipschitz K
+
+
+function K = lip(f,g, x, y, norme)
+    
+    K = 0;
+    
+    xmax = 0; 
+    ymax = 0;
+    
+    function z = unsurG(x)
+        z = 1/g(x(1),x(1));
+    endfunction
+    //a changer pour une autre fonction si jamais
+    [J,H] = numderivative(unsurG,[x(1),y(1)],[],[],"blockmat");
+    
+    K = norm(J,norme);
+    
+    for i = x
+        for j = y
+            [J,H] = numderivative(unsurG,[i,j],[],[],"blockmat");
+             tmp = norm(J,norme);
+             
+             if(tmp > K) then
+                 K = tmp;
+             end 
+        end
+    end
+    
+    
+    
+endfunction
+
+K = lip(rhoX, rhoY,x,y,1);
+delta = 0.5+ (K * h)/sqrt(2)
+disp(K);
+disp(delta)
+//operateurs qui vont bien
+function y = Dxx(u, i, j, h)
+    y = (1/h^2) * (u(i+1,j) + u(i-1,j) - 2*u(i,j));
+endfunction
+
+function y = Dyy(u, i, j, h)
+    y = (1/h^2) * (u(i,j+1) + u(i,j-1) - 2*u(i,j));
+endfunction
+
+function y = Dxy(u, i, j, h)
+    y = (1/(4 *h^2)) * (u(i+1,j+1) + u(i-1,j-1) - u(i-1,j+1) - u(i+1,j-1));
+endfunction
+
+function y = Dx(u, i, j, h)
+    y = (1/(2*h)) * (u(i+1,j) - u(i-1,j));
+endfunction
+
+function y = Dy(u, i, j, h)
+    y = (1/(2*h)) * (u(i,j+1) - u(i,j-1));
+endfunction
+    
+function y = Dvv(u, i, j, h)
+    y = (1/(2*h^2)) * (u(i+1,j+1) + u(i-1,j-1) - 2*u(i,j));
+endfunction
+
+function y = Dvvorth(u, i, j, h)
+    y = (1/(2*h^2)) * (u(i+1,j-1) + u(i-1,j+1) - 2*u(i,j));
+endfunction
+
+function y = Dv(u, i, j, h)
+    y = (1/(2*sqrt(2)*h)) * (u(i+1,j+1) - u(i-1,j-1));
+endfunction
+
+function y = Dvorth(u, i, j, h)
+    y = (1/(2*sqrt(2)*h)) * (u(i+1,j-1) - u(i-1,j+1));
+endfunction
+//////
+
+// diff finie pour le bord
+
+function r = DunBordGauche (u, i, j, h,n)
+    r = (1/h) * (n(1) * (u(i+1,j) - u(i,j)) + max(n(2),0) * (u(i,j) - u(i,j-1)) + min(n(2),0) * (u(i,j+1) - u(i,j)))
+endfunction
+
+function r = DunBordDroite (u, i, j, h,n)
+    r = (1/h) * (n(1) * (u(i,j) - u(i-1,j)) + max(n(2),0) * (u(i,j) - u(i,j-1)) + min(n(2),0) * (u(i,j+1) - u(i,j)))
+endfunction
+
+function r = DunBordHaut (u, i, j, h,n)
+    r = (1/h) * (n(2) * (u(i,j) - u(i,j-1)) + max(n(1),0) * (u(i,j) - u(i-1,j)) + min(n(1),0) * (u(i+1,j) - u(i,j)))
+endfunction
+
+function r = DunBordBas (u, i, j, h,n)
+    r = (1/h) * (n(2) * (u(i,j+1) - u(i,j)) + max(n(1),0) * (u(i,j) - u(i-1,j)) + min(n(1),0) * (u(i+1,j) - u(i,j)))
+endfunction
+
+function r = DunCoinHautGauche(u,i,j,h,n)
+    r = (1/h) * (n(1) * (u(i+1,j) - u(i,j)) + n(2) * (u(i,j) - u(i,j-1)) )
+endfunction
+
+function r = DunCoinHautDroite(u,i,j,h,n)
+    r = (1/h) * (n(1) * (u(i,j) - u(i-1,j)) + n(2) * (u(i,j) - u(i,j-1)) )
+endfunction
+
+function r = DunCoinBasGauche(u,i,j,h,n)
+    r = (1/h) * (n(1) * (u(i+1,j) - u(i,j)) + n(2) * (u(i,j+1) - u(i,j)) )
+endfunction
+
+function r = DunCoinBasDroite(u,i,j,h,n)
+    r = (1/h) * (n(1) * (u(i,j) - u(i-1,j)) + n(2) * (u(i,j+1) - u(i,j)) )
+endfunction
+
+///// calcul de l'ensemble drond y
+
+drondY = 0
+//bord haut
+for i = 1:Npoints
+    drondY(i,1) = x(i) 
+    drondY(i,2) = ymax
+end
+
+//bord bas
+for i = 1:Npoints
+    drondY(i+Npoints,:) = [x(i) ymin]
+end
+
+//bord gauche
+for i = 1:Npoints
+    drondY(i+2*Npoints,:) = [xmin y(i)]
+end
+
+//bord droite
+for i = 1:Npoints
+    drondY(i+3*Npoints,:) = [xmax y(i)]
+end
+
+// tous les vecteurs n
+
+vectsgauche = [0 0]
+vectsdroite = [0 0]
+vectshaut = [0 0]
+vectsbas = [0 0]
+
+
+for i = 1:Nvectsbord
+    
+    vectsgauche(i,:) = [cos(%pi/2 + ((i-1) * %pi)/(Nvectsbord-1)) sin(%pi/2 + ((i-1) * %pi )/(Nvectsbord-1))]
+    vectsdroite(i,:) = [cos(3*%pi/2 + ((i-1) * %pi )/(Nvectsbord-1)) sin(3*%pi/2 + ((i-1) * %pi )/(Nvectsbord-1))]
+    vectshaut(i,:) = [cos(((i-1) * %pi )/(Nvectsbord-1)) sin(((i-1) * %pi )/(Nvectsbord-1))]
+    vectsbas(i,:) = [cos(%pi + ((i-1) * %pi )/(Nvectsbord-1)) sin(%pi + ((i-1) * %pi )/(Nvectsbord-1))]
+    
+end
+
+vectshautgauche = vectsgauche(1:(Nvectsbord/2),:)
+vectshautdroite = vectshaut(1:(Nvectsbord/2),:)
+vectsbasgauche = vectsbas(1:(Nvectsbord/2),:)
+vectsbasdroite = vectsdroite(1:(Nvectsbord/2),:)
+
+//fonction pour H*(n)
+
+function r = Hetoile(n, drondY)
+    
+    //je fais le calcul bebe maintenant, je changerai plus tard
+    r = sum(n .* drondY(1,:))
+    for i = 1:(4*Npoints)
+        tmp = sum(n .* drondY(i,:))
+        r = max(r,tmp)
+    end
+    
+endfunction
+
+//pre-calcul des H*(n)
+
+Hetoilegauche = 0
+Hetoiledroite = 0
+Hetoilehaut = 0
+Hetoilebas = 0
+Hetoilehautgauche = 0
+Hetoilebasgauche = 0
+Hetoilehautdroite = 0
+Hetoilebasdroite = 0
+
+for k = 1:Nvectsbord
+    Hetoilegauche(k) = Hetoile(vectsgauche(k,:),drondY)
+    Hetoiledroite(k) = Hetoile(vectsdroite(k,:),drondY)
+    Hetoilehaut(k) = Hetoile(vectshaut(k,:),drondY)
+    Hetoilebas(k) = Hetoile(vectsbas(k,:),drondY)
+end
+
+for k = 1:(Nvectsbord/2)
+    Hetoilehautgauche(k) = Hetoile(vectshautgauche(k,:),drondY)
+    Hetoilehautdroite(k) = Hetoile(vectshautdroite(k,:),drondY)
+    Hetoilebasgauche(k) = Hetoile(vectsbasgauche(k,:),drondY)
+    Hetoilebasdroite(k) = Hetoile(vectsbasdroite(k,:),drondY)
+end
+
+
+// fonctions pour Hamilton Jacobi au bord
+
+function r = Hdeltaugauche(u,i,j,h)
+    
+    r = -1000;
+    for k = 1:Nvectsbord
+        
+        n = vectsgauche(k,:);
+        Hstar = Hetoilegauche(k);
+        deltauxn = DunBordGauche(u,i,j,h,n);
+        
+        res = deltauxn - Hstar;
+        r = max(r,res);
+    end
+    
+endfunction
+
+function r = Hdeltaudroite(u,i,j,h)
+    
+    r = -1000;
+    for k = 1:Nvectsbord
+        
+        n = vectsdroite(k,:);
+        Hstar = Hetoiledroite(k);
+        deltauxn = DunBordDroite(u,i,j,h,n);
+        
+        res = deltauxn - Hstar;
+        r = max(r,res);
+    end
+    
+endfunction
+
+function r = Hdeltauhaut(u,i,j,h)
+    
+    r = -1000;
+    for k = 1:Nvectsbord
+        
+        n = vectshaut(k,:);
+        Hstar = Hetoilehaut(k);
+        deltauxn = DunBordHaut(u,i,j,h,n);
+        
+        res = deltauxn - Hstar;
+        r = max(r,res);
+    end
+    
+endfunction
+
+function r = Hdeltaubas(u,i,j,h)
+    
+    r = -1000;
+    for k = 1:Nvectsbord
+        
+        n = vectsbas(k,:);
+        Hstar = Hetoilebas(k);
+        deltauxn = DunBordBas(u,i,j,h,n);
+        
+
+        res = deltauxn - Hstar;
+        r = max(r,res);
+    end
+    
+endfunction
+
+function r = HdeltauCoinHautGauche(u,i,j,h)
+    
+    r = -1000;
+    for k = 1:(Nvectsbord/2)
+        
+        n = vectshautgauche(k,:);
+        Hstar = Hetoilehautgauche(k);
+        deltauxn = DunCoinHautGauche(u,i,j,h,n);
+        
+        res = deltauxn - Hstar;
+        r = max(r,res);
+    end
+    
+endfunction
+
+function r = HdeltauCoinHautDroite(u,i,j,h)
+    
+    r = -1000;
+    for k = 1:(Nvectsbord/2)
+        
+        n = vectshautdroite(k,:);
+        Hstar = Hetoilehautdroite(k);
+        deltauxn = DunCoinHautDroite(u,i,j,h,n);
+        
+        res = deltauxn - Hstar;
+        r = max(r,res);
+    end
+    
+endfunction
+
+function r = HdeltauCoinBasGauche(u,i,j,h)
+    
+    r = -1000;
+    for k = 1:(Nvectsbord/2)
+        
+        n = vectsbasgauche(k,:);
+        Hstar = Hetoilebasgauche(k);
+        deltauxn = DunCoinBasGauche(u,i,j,h,n);
+        
+        res = deltauxn - Hstar;
+        r = max(r,res);
+    end
+    
+endfunction
+
+function r = HdeltauCoinBasDroite(u,i,j,h)
+    
+    r = -1000;
+    for k = 1:(Nvectsbord/2)
+        
+        n = vectsbasdroite(k,:);
+        Hstar = Hetoilebasdroite(k);
+        deltauxn = DunCoinBasDroite(u,i,j,h,n);
+        
+        res = deltauxn - Hstar;
+        r = max(r,res);
+    end
+    
+endfunction
+//////
+
+u=0;
+matDxx = 0;
+matDyy = 0;
+matDxy = 0;
+matDx = 0;
+matDy = 0;
+matDvv = 0;
+matDvvorth = 0;
+matDv = 0;
+matDvorth = 0;
+rhoXmat = 0;
+rhoYmat = 0;
+detmat = 0;
+matGradient = 0;
+matZeros = 0;
+//initialisations
+
+for i = 1:Npoints
+    for j = 1:Npoints
+        u(i,j) = norm([x(i), y(j)])^2 / 2;
+        //u(i,j) = (x(i)^4 + y(j) ^4)/ 4;
+        matZeros(i,j) = 0
+        matDxx(i,j) = 0;
+        matDyy(i,j) = 0;
+        matDxy(i,j) = 0;
+        matDx(i,j) = 0;
+        matDy(i,j) = 0;
+        matDvv(i,j) = 0;
+        matDvvorth(i,j) = 0;
+        matDv(i,j) = 0;
+        matDvorth(i,j) = 0;
+        rhoXmat(i,j) = rhoX(x(i),y(j));
+        rhoYmat(i,j) = rhoY(x(i),y(j));
+        detmat(i,j) = 0;
+        matGradient(i,j) = 0;
+        rhoYmatOrth(i,j) = rhoY(x(i),y(j));
+    end
+end
+
+u0 = u;
+
+for k = 1:Niter
+    disp(k);
+    
+    matDxx(2:(Npoints-1), 2:(Npoints-1))  = (1/h^2) * (u(3:Npoints,2:(Npoints-1)) + u(1:(Npoints-2),2:(Npoints-1)) - 2*u(2:(Npoints-1),2:(Npoints-1)));
+    matDyy(2:(Npoints-1), 2:(Npoints-1)) = (1/h^2) * (u(2:(Npoints-1),3:Npoints) + u(2:(Npoints-1),1:(Npoints-2)) - 2*u(2:(Npoints-1),2:(Npoints-1)));
+    matDxy(2:(Npoints-1), 2:(Npoints-1)) = (1/(4 *h^2)) * (u(3:Npoints,3:Npoints) + u(1:(Npoints-2),1:(Npoints-2)) - u(1:(Npoints-2),3:Npoints) - u(3:Npoints,1:(Npoints-2)));
+    matDx(2:(Npoints-1), 2:(Npoints-1)) = (1/(2*h)) * (u(3:Npoints,2:(Npoints-1)) - u(1:(Npoints-2),2:(Npoints-1)));
+    matDy(2:(Npoints-1), 2:(Npoints-1)) = (1/(2*h)) * (u(2:(Npoints-1),3:Npoints) - u(2:(Npoints-1),1:(Npoints-2)));
+    
+    
+    for i = 2:(Npoints-1)
+        for j = 2:(Npoints -1)
+//            matDxx(i,j) = Dxx(u,i,j,h);
+//            matDyy(i,j) = Dyy(u,i,j,h);
+//            matDxy(i,j) = Dxy(u,i,j,h);
+//            matDx(i,j) = Dx(u,i,j,h);
+//            matDy(i,j) = Dy(u,i,j,h);
+            matDvv(i,j) = Dvv(u,i,j,h);
+            matDvvorth(i,j) = Dvvorth(u,i,j,h);
+            matDv(i,j) = Dv(u,i,j,h);
+            matDvorth(i,j) = Dvorth(u,i,j,h);
+            //matGradient(i,j) = norm([matDx(i,j) matDy(i,j)],2);
+            rhoYmat(i,j) = rhoY(matDx(i,j), matDy(i,j)) ;
+            rhoYmatOrth(i,j) = rhoY((1/sqrt(2)) * (matDv(i,j) + matDvorth(i,j)), (1/sqrt(2)) * (matDv(i,j) - matDvorth(i,j)))
+            detmat(i,j) = det([Dxx(u,i,j,h) Dxy(u,i,j,h) ; Dxy(u,i,j,h) Dyy(u,i,j,h)]);
+        end
+    end
+    
+    
+    
+    res = rhoYmat .* detmat;
+    
+    //update MAA
+    MAA = matDxx .* matDyy - matDxy .* matDxy - rhoXmat ./ rhoYmat - u(Npoints/2,Npoints/2) ; 
+    
+    MA1 = max(matDxx, delta) .* max(matDyy, delta) - min (matDxx, delta) - min(matDyy, delta) - rhoXmat ./ rhoYmat - u(Npoints/2,Npoints/2);
+    
+    MA2 = max(matDvv, delta) .* max(matDvvorth, delta) - min(matDvv, delta) - min(matDvvorth, delta) - rhoXmat ./ rhoYmatOrth - u(Npoints/2,Npoints/2);
+    
+    MAM = min(MA1, MA2)
+    MA = matZeros
+    MA(2:(Npoints-1), 2:(Npoints-1)) = MAA(2:(Npoints-1), 2:(Npoints-1)) //+ epsilon * S((MAA - MAM)/epsilon)
+    
+//    for i = 2:(Npoints-1)
+//       MA(1,i) = Hdeltaugauche(u,1,i,h)
+//       MA(Npoints,i) = Hdeltaudroite(u,Npoints,i,h)
+//       MA(i,Npoints) = Hdeltauhaut(u,i,Npoints,h)
+//       MA(i,1) = Hdeltaubas(u,i,1,h)
+//    end
+//    
+//    MA(1,Npoints) = HdeltauCoinHautGauche(u,1,Npoints,h)
+//    MA(Npoints,Npoints) = HdeltauCoinHautDroite(u,Npoints,Npoints,h)
+//    MA(1,1) = HdeltauCoinBasGauche(u,1,1,h)
+//    MA(Npoints,1) = HdeltauCoinBasDroite(u,Npoints,1,h)
+//    
+    //update u
+    prevu = u
+    u = u + dt * MA;
+    
+    //plot things
+    drawlater
+    clf();
+    plot3d(x(2:(Npoints-1)),y(2:(Npoints-1)),res((2:(Npoints-1)),(2:(Npoints-1))));
+    
+    //Sgrayplot(x,y,rhoYmat,strf="041",colminmax=[1,64]);
+    //champ1(x,y,matDx,matDy)
+    //Sgrayplot(x,y,rhoYmat .* detmat,strf="041",colminmax=[1,64]);
+//    colorbar(0, 2, [1,64]);
+//    Sgrayplot(x(2:(Npoints-1)),y(2:(Npoints-1)),res((2:(Npoints-1)),(2:(Npoints-1))),strf="041",colminmax=[1,64]);
+    //Sgrayplot(x,y,prevu - u,strf="041",colminmax=[1,64]);
+    drawnow
+    disp(max(prevu-u))
+    
+
+    //plot3d(x,y,res);
+    //plot3d(x,y,res);
+end
+
+
