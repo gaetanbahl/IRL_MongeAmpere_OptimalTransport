@@ -34,3 +34,4 @@ Seul le schéma précis a été implémenté en OpenCL (pas de condition au bord
 - Implémenter les autres schémas en OpenCL
 - Utiliser la méthode de Newton décrite dans l'article au lieu de la méthode d'Euler
 
+![Exemple de déplacement](/slides/depl1.png)
