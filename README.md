@@ -28,6 +28,10 @@ cepandant à calculer des transports optimaux avec le schéma précis (cf rappor
 
 Seul le schéma précis a été implémenté en OpenCL (pas de condition au bord).
 
+Le code OpenCL a besoin du dossier "common" des exemples du SDK OpenCL d'Intel pour fonctionner.
+Je n'ai pas inclus ce dossier dans le dépôt car je n'ai pas écrit ce code. 
+Le dossier common peut être trouvé dans les exemples de cette page https://software.intel.com/en-us/intel-opencl-support/code-samples et doit être positionné à côté du dossier "opencl" de ce dépôt avant de lancer make.
+
 ## Travail restant
 
 - Déboguer le schéma monotone scilab
